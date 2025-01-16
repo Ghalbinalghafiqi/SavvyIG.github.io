@@ -1,5 +1,5 @@
 // Path ke file JSON archive
-const jsonFile = "./media.json";
+const jsonFile = "./downloaded_media.json";
 
 // Fungsi untuk load dan render data
 fetch(jsonFile)
@@ -11,22 +11,40 @@ fetch(jsonFile)
       const card = document.createElement("div");
       card.className = "card";
 
-      // Buat embed iframe untuk media
-      const iframe = document.createElement("iframe");
-      iframe.src = `${item.media_url}embed`;
-      iframe.width = "100%";
-      iframe.height = "400px";
-      iframe.style.border = "none";
-      iframe.allow = "encrypted-media";
+      // Periksa apakah ada file media di dalam item
+      item.downloaded_files.forEach((file) => {
+        const fileExtension = file.split('.').pop().toLowerCase();
+
+        let mediaElement;
+
+        // Jika file adalah gambar (jpg, jpeg, png, gif)
+        if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+          mediaElement = document.createElement("img");
+          mediaElement.src = file;
+          mediaElement.alt = "Image";
+          mediaElement.style.width = "100%";
+        }
+        // Jika file adalah video (mp4, webm)
+        else if (['mp4', 'webm'].includes(fileExtension)) {
+          mediaElement = document.createElement("video");
+          mediaElement.src = file;
+          mediaElement.controls = true;
+          mediaElement.style.width = "100%";
+        }
+
+        // Jika ada elemen media, tambahkan ke dalam card
+        if (mediaElement) {
+          card.appendChild(mediaElement);
+        }
+      });
 
       // Tambahkan caption
-      const caption = document.createElement("div");
-      caption.className = "caption";
-      caption.textContent = item.caption || "No caption";
+      // const caption = document.createElement("div");
+      // caption.className = "caption";
+      // caption.textContent = item.caption || "No caption";
 
-      // Gabungkan elemen ke card
-      card.appendChild(iframe);
-      card.appendChild(caption);
+      // // Gabungkan elemen ke card
+      // card.appendChild(caption);
 
       // Tambahkan card ke gallery
       gallery.appendChild(card);
